@@ -26,7 +26,7 @@ Staff Commands\n
         [type] - TW-SOLOS, TW-DUOS, TW-TRIOS, TW-SQUADS, SG-SOLOS, SG-DUOS\n
         [date] - MM/DD/YY \n
     close [name] - closes the tournament with the name [name], ends enrollment.\n
-    choose [name] - chooses enrolled players from tournament with the name [name] on who will play, tournament must be closed to use choose.
+    choose [name] [sub(optional)]- chooses enrolled players from tournament with the name [name] on who will play, tournament must be closed to use choose.
 ```"""
 client = commands.Bot(command_prefix = ("!t ", "!t", "!"), case_insensitive = True, help_command=None)
 
@@ -54,15 +54,6 @@ async def on_command_error(ctx, error):
         await ctx.send("That is an invalid command!")
     else:
         print(error)
-
-#@client.event
-#async def on_message(ctx):
-#    if ctx.channel.id == 699355128695881761:
-#        if ctx.author.id != platid:
-#            if str(ctx.content) is '!tcompete' or '!t compete':
-#                print('pass')
-#            else:
-#                await ctx.delete()
 
 @client.command()
 async def help(ctx):
@@ -211,7 +202,7 @@ async def close_error(ctx, error):
         await ctx.send("Required argument missing, be sure to specify the name of the tournament you would like to close!")
 
 @client.command()
-async def choose(ctx, name):
+async def choose(ctx, name, sub:int = 0):
     author = ctx.message.author
     staff = discord.utils.get(author.guild.roles, id=699345791478792292)
     if staff in ctx.author.roles:
@@ -231,7 +222,8 @@ async def choose(ctx, name):
                 enrollScores.append(score)
             a = dict(zip(idlist, enrollScores))
             b = sorted(a.items(), key=lambda x: x[1], reverse=True)
-            chosenValues = list(itertools.islice(b, typedict[tType]))
+            amount = typedict[tType] - sub
+            chosenValues = list(itertools.islice(b, amount))
             chosenids = []
             for i in range(len(chosenValues)):
                 chosenids.append(chosenValues[i][0])
